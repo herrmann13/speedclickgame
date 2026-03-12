@@ -1,39 +1,77 @@
 import pygame
 
+from entities.cell import Cell
+from entities.scoreboard import Scoreboard
+
+
 pygame.init()
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 1200, 800
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 
-# Quantidade de linhas e colunas na grade
 ROWS, COLS = 8, 12
-CELL = 40
+CELL_SIZE = 80
 MARGIN = 2
 
-# Tamanho da grade em pixels
-grid_w = COLS * CELL
-grid_h = ROWS * CELL
-
-# Centralizar a grade na tela
+grid_w = COLS * CELL_SIZE
+grid_h = ROWS * CELL_SIZE
 offset_x = (WIDTH - grid_w) // 2
 offset_y = (HEIGHT - grid_h) // 2
 
-while True:
+cells = []
+id_count = 0
+
+
+for r in range(ROWS):
+    row_cells = []
+    for c in range(COLS):
+        id_count += 1
+        x = offset_x + c * CELL_SIZE + MARGIN
+        y = offset_y + r * CELL_SIZE + MARGIN
+        size = CELL_SIZE - 2 * MARGIN
+        row_cells.append(Cell(r, c, x, y, size, id_count))
+    cells.append(row_cells)
+
+scoreboard = Scoreboard()
+
+pressed_cell = None
+
+running = True
+while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            scoreboard.add_points(1)
+
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            mouse_pos = event.pos
+            for row in cells:
+                for cell in row:
+                    if cell.rect.collidepoint(mouse_pos):
+                        pressed_cell = cell
+                        if pressed_cell.press():
+                            scoreboard.add_points(1)
+                        break
+                    
+                if pressed_cell:
+                    break
+
+        if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+            if pressed_cell:
+                pressed_cell.release()
+                pressed_cell = None
+
     screen.fill((25, 25, 25))
-    for r in range(ROWS):
-        for c in range(COLS):
-            x = offset_x + c * CELL
-            y = offset_y + r * CELL
-            rect = pygame.Rect(
-                x + MARGIN,
-                y + MARGIN,
-                CELL - 2 * MARGIN,
-                CELL - 2 * MARGIN
-            )
-            pygame.draw.rect(screen, (90, 180, 255), rect)
+
+    scoreboard.render(screen)
+
+    for row in cells:
+        for cell in row:
+            cell.draw(screen)
+
     pygame.display.flip()
     clock.tick(60)
+
 pygame.quit()
