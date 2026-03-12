@@ -1,8 +1,7 @@
 import pygame
-
+import random  # main.py (topo)
 from entities.cell import Cell
 from entities.scoreboard import Scoreboard
-
 
 pygame.init()
 WIDTH, HEIGHT = 1200, 800
@@ -21,7 +20,6 @@ offset_y = (HEIGHT - grid_h) // 2
 cells = []
 id_count = 0
 
-
 for r in range(ROWS):
     row_cells = []
     for c in range(COLS):
@@ -32,8 +30,15 @@ for r in range(ROWS):
         row_cells.append(Cell(r, c, x, y, size, id_count))
     cells.append(row_cells)
 
-scoreboard = Scoreboard()
 
+TARGET_EVENT = pygame.USEREVENT + 1
+TARGET_INTERVAL_MS = 1000
+pygame.time.set_timer(TARGET_EVENT, TARGET_INTERVAL_MS)
+all_cells = [cell for row in cells for cell in row]
+current_target = random.choice(all_cells)
+current_target.set_target()
+
+scoreboard = Scoreboard()
 pressed_cell = None
 
 running = True
@@ -42,8 +47,11 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            scoreboard.add_points(1)
+        if event.type == TARGET_EVENT:
+            current_target.is_target = False
+            current_target.current_color = current_target.base_color
+            current_target = random.choice(all_cells)
+            current_target.set_target()
 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             mouse_pos = event.pos
