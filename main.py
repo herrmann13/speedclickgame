@@ -32,7 +32,7 @@ for r in range(ROWS):
 
 
 TARGET_EVENT = pygame.USEREVENT + 1
-TARGET_INTERVAL_MS = 1000
+TARGET_INTERVAL_MS = 500
 pygame.time.set_timer(TARGET_EVENT, TARGET_INTERVAL_MS)
 all_cells = [cell for row in cells for cell in row]
 current_target = random.choice(all_cells)
