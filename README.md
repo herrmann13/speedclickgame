@@ -29,8 +29,6 @@ WIDTH, HEIGHT = 1200, 800
 
 - Aumente `WIDTH` para deixar a janela mais larga.
 - Diminua `WIDTH` para deixar a janela mais estreita.
-- Aumente `HEIGHT` para deixar a janela mais alta.
-- Diminua `HEIGHT` para deixar a janela mais baixa.
 
 ## Como aumentar ou diminuir a quantidade de celulas
 
